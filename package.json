@@ -1,0 +1,25 @@
+{
+  "name": "robot",
+  "version": "1.0.0",
+  "description": "ci build robot for bearychat",
+  "main": "server.js",
+  "dependencies": {
+    "eventproxy": "^0.3.2",
+    "jwt-simple": "^0.2.0",
+    "log4js" : "^0.6.22",
+    "express": "~4.0.0",
+    "body-parser": "1.14.1",
+    "mongoose": "4.0.6",
+    "buffer": "*",
+    "compression": "*",
+    "bufferhelper": "*",
+    "ramda": "*",
+    "basic-auth": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "xuchdeid"
+}
