@@ -51,7 +51,7 @@ function PostCiBuildCommand(job, response) {
           var error = {
               text: 'invalid user or password!'
           }
-          res.send(JSON.stringify(error));
+          response.send(JSON.stringify(error));
       });
       res.on('end', function() {
           console.log('no more data in response.');
