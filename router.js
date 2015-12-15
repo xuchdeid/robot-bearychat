@@ -61,13 +61,16 @@ function PostCiBuildCommand(job, response) {
           var end = {
               text: 'build ' + job + ' start!'
           }
-          res.send(JSON.stringify(end));
+          response.send(JSON.stringify(end));
       });
   });
 
   req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
-      response.send(e.message);
+      var error = {
+          text: e.message
+      }
+      response.send(JSON.stringify(error));
   })
 
   // post the data
