@@ -47,15 +47,21 @@ function PostCiBuildCommand(job, response) {
   var req = http.request(post_options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function(chunk) {
-          console.log('Response: ' + chunk);
-          response.send(chunk);
+          //console.log('Response: ' + chunk);
+          var error = {
+              text: 'invalid user or password!'
+          }
+          res.send(JSON.stringify(error));
       });
       res.on('end', function() {
           console.log('no more data in response.');
           if(response.headersSent) {
               return;
           }
-          response.send('end');
+          var end = {
+              text: 'build ' + job + ' start!'
+          }
+          res.send(JSON.stringify(end));
       });
   });
 
