@@ -6,26 +6,41 @@ var router = express.Router();
 router.post('/build', function(req, res) {
     var data = req.body;
     console.log(data);
-    if (data.trigger_word === config.android.command && data.text) {
-        var command = data.text.replace(data.trigger_word, '').replace(/[ ]/g, '');
-        var job = config.android[command];
-        console.log('command:' + command + ' job:' + job);
-        if (job) {
-            PostCiBuildCommand(job, res);
-        } else {
-            var commands = 'commands:';
-            for (var item in config.android) {
-                commands += item + ' ';
+ 
+    if (data.token && data.token == config.token) {
+        var cmd = config[data.channel_name];
+        //console.log(cmd);
+        if (cmd) { 
+            if (data.trigger_word === cmd.command && data.text) {
+                var command = data.text.replace(data.trigger_word, '').replace(/[ ]/g, '');
+                var job = cmd[command];
+                console.log('command:' + command + ' job:' + job);
+                if (job) {
+                    PostCiBuildCommand(job, res);
+                } else {
+                    var commands = data.channel_name + ' cmds:';
+                    for (var item in cmd) {
+                        if (item != 'command') {
+                            commands += item + ' ';
+                        }
+                    }                              
+                    sendError(res, commands);
+                }
             }
-            var error = {
-                text: commands
-            }
-            res.send(JSON.stringify(error));
+        } else {           
+            sendError(res, 'invalid params');
         }
     } else {
-        res.send('invalid params');
+        sendError(res, 'invalid token');
     }
 });
+
+function sendError(res, info) {
+    var error = {
+        text: info
+    }
+    res.send(JSON.stringify(error));
+}
 
 function PostCiBuildCommand(job, response) {
   // An object of options to indicate where to post to
@@ -33,7 +48,7 @@ function PostCiBuildCommand(job, response) {
 
   var post_options = {
       host: config.ci.url,
-      port: '80',
+      port: config.ci.port,
       path: config.ci.path.replace(/{job}/, job),
       method: 'POST',
       headers: {
@@ -55,7 +70,8 @@ function PostCiBuildCommand(job, response) {
       });
       res.on('end', function() {
           console.log('no more data in response.');
-          if(response.headersSent) {
+          if (response.headersSent) {
+              console.log('response header sent!');
               return;
           }
           var end = {
@@ -67,10 +83,7 @@ function PostCiBuildCommand(job, response) {
 
   req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
-      var error = {
-          text: e.message
-      }
-      response.send(JSON.stringify(error));
+      sendError(response, e.message);
   })
 
   // post the data
